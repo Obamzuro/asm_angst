@@ -1,0 +1,28 @@
+     1                                 %line 1+1 adc.asm
+     2                                 [section .data]
+     3                                 EXIT_SUCCESS equ 0
+     4                                 SYS_EXIT equ 60
+     5                                 
+     6 00000000 00000000000000A000-    dquad1 ddq 0xA000000000000000
+     7 00000000 00000000000000     
+     8 00000010 000000000000008000-    dquad2 ddq 0x8000000000000000
+     9 00000010 00000000000000     
+    10 00000020 000000000000000000-    dqSum ddq 0
+    11 00000020 00000000000000     
+    12                                 
+    13                                 [section .text]
+    14                                 [global _start]
+    15                                 _start:
+    16 00000000 488B0425[00000000]      mov rax, qword [dquad1]
+    17 00000008 488B1425[08000000]      mov rdx, qword [dquad1+8]
+    18                                 
+    19 00000010 48030425[00000000]      add rax, qword [dquad2]
+    20 00000018 48131425[08000000]      adc rdx, qword [dquad2+8]
+    21                                 
+    22 00000020 48890425[00000000]      mov qword [dqSum], rax
+    23 00000028 48891425[08000000]      mov qword [dqSum+8], rdx
+    24                                 
+    25                                 last:
+    26 00000030 48C7C03C000000          mov rax, SYS_EXIT
+    27 00000037 48C7C700000000          mov rdi, EXIT_SUCCESS
+    28 0000003E 0F05                    syscall

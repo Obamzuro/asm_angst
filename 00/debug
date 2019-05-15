@@ -1,0 +1,9 @@
+br _start
+run
+x/db &bVar1
+x/db &bVar2
+x/db &bResult
+b last
+c
+x/db &bResult
+c
