@@ -1,0 +1,7 @@
+br last
+run
+set logging file fibonacci.txt
+set logging on
+x/dg &fibonacci
+set logging off
+c

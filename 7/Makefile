@@ -1,6 +1,6 @@
-NAME=example
+NAME=fibonacci
 
-SRC=example.asm
+SRC=$(NAME).asm
 
 FLAGSYASM=-g dwarf2 -f elf64
 
