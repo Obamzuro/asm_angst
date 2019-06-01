@@ -1,0 +1,76 @@
+     1                                 %line 1+1 palindromeOther.asm
+     2                                 [section .data]
+     3                                 SYS_EXIT equ 60
+     4                                 EXIT_SUCCESS equ 0
+     5                                 
+     6 00000000 2020202041206D616E-    strPal db "    A man,,,, a plan!!,,, a-- canal - Panama!     "
+     7 00000000 2C2C2C2C206120706C-
+     8 00000000 616E21212C2C2C2061-
+     9 00000000 2D2D2063616E616C20-
+    10 00000000 2D2050616E616D6121-
+    11 00000000 2020202020         
+    12                                 len equ 50
+    13 00000032 00                     isPal db 0
+    14                                 
+    15 00000033 202C2D21               ignoredChars db ' ', ',', '-', '!'
+    16                                 icLen equ 4
+    17                                 
+    18                                 [section .text]
+    19                                 [global _start]
+    20                                 _start:
+    21 00000000 48C7C132000000          mov rcx, len
+    22 00000007 48C7C600000000          mov rsi, 0
+    23                                 pushString:
+    24 0000000E 480FB686[00000000]      movzx rax, byte [strPal+rsi]
+    25 00000016 50                      push rax
+    26 00000017 48FFC6                  inc rsi
+    27 0000001A E2F0                    loop pushString
+    28                                 
+    29 0000001C 48C7C132000000          mov rcx, len
+    30 00000023 48C7C600000000          mov rsi, 0
+    31                                 check:
+    32 0000002A 58                      pop rax
+    33 0000002B 48C7C700000000          mov rdi, 0
+    34                                 mbIgnoreStack:
+    35 00000032 4C0FB687[00000000]      movzx r8, byte[ignoredChars+rdi]
+    36 0000003A 4C39C0                  cmp rax, r8
+    37 0000003D 743C                    je skip
+    38 0000003F 48FFC7                  inc rdi
+    39 00000042 4883FF04                cmp rdi, icLen
+    40 00000046 75E8                    jne mbIgnoreStack
+    41                                 
+    42                                 checkStr:
+    43 00000048 480FB69E[00000000]      movzx rbx, byte [strPal+rsi]
+    44 00000050 48C7C700000000          mov rdi, 0
+    45                                 mbIgnoreStr:
+    46 00000057 4C0FB687[00000000]      movzx r8, byte[ignoredChars+rdi]
+    47 0000005F 4C39C3                  cmp rbx, r8
+    48 00000062 741B                    je skipWithIterate
+    49 00000064 48FFC7                  inc rdi
+    50 00000067 4883FF04                cmp rdi, icLen
+    51 0000006B 75E8                    jne mbIgnoreStr
+    52                                 
+    53 0000006D 4883C820                or rax, 0x20
+    54 00000071 4883CB20                or rbx, 0x20
+    55 00000075 4839D8                  cmp rax, rbx
+    56 00000078 7510                    jne no
+    57 0000007A 48FFC6                  inc rsi
+    58                                 skip:
+    59 0000007D E2A9                    loop check
+    60 0000007F EB13                    jmp yes
+    61                                 
+    62                                 skipWithIterate:
+    63 00000081 48FFC6                  inc rsi
+    64 00000084 4883FE32                cmp rsi, len
+    65 00000088 7700                    ja no
+    66 0000008A EBBA                    jmp checkStr
+    67                                 
+    68                                 no:
+    69 0000008C C60425[00000000]00      mov byte [isPal], 0
+    70 00000094 EB06                    jmp last
+    71                                 yes:
+    72 00000096 C60425[00000000]01      mov byte [isPal], 1
+    73                                 last:
+    74 0000009E 48C7C03C000000          mov rax, SYS_EXIT
+    75 000000A5 48C7C700000000          mov rdi, EXIT_SUCCESS
+    76 000000AC 0F05                    syscall
